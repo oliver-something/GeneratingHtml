@@ -1,3 +1,20 @@
+
+BLOCK_LEVEL_TAGS = [
+    'address', 'article', 'aside', 'blockquote','canvas',
+    'dd', 'div', 'dl', 'dt', 'fieldset','figcaption', 'figure',
+    'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'header', 'hr','li', 'main', 'nav', 'noscript', 'ol',
+    'p', 'pre', 'section', 'table', 'tfoot', 'ul', 'video',
+]
+
+INLINE_LEVEL_TAGS = [
+    'a', 'abbr', 'acronym', 'b', 'bdo', 'big',
+    'button', 'cite', 'code', 'dfn', 'em', 'i',
+    'input', 'kbd', 'label', 'map', 'object', 'output',
+    'samp', 'script', 'select', 'small', 'span', 'strong',
+    'sup', 'textarea', 'time', 'tt', 'var'
+]
+
 class Tag:
     def __init__(self, name, attributes=None, children=None):
         self.name = name
@@ -31,8 +48,15 @@ class Tag:
         else:
             return f"{indent_str}<{self.name}{attributes_str} />{newline}"
 
+
     def __call__(self, children):
+        # Validate each child
+        for child in children:
+            if self.name in INLINE_LEVEL_TAGS and child.name in BLOCK_LEVEL_TAGS:
+                raise Exception(f"Block-level tag <{child.name}> cannot be added inside an inline-level tag <{self.name}>.")
+
         """Allow adding children with function-like syntax."""
+        # Add valid children
         self.children.extend(children)
         return self
 
@@ -41,22 +65,27 @@ class Html(Tag):
     def __init__(self, **attributes):
         super().__init__('html', attributes)
 
+
 class Head(Tag):
     def __init__(self, **attributes):
         super().__init__('head', attributes)
+
 
 class Body(Tag):
     def __init__(self, **attributes):
         super().__init__('body', attributes)
 
+
 class Meta(Tag):
     def __init__(self, **attributes):
         super().__init__('meta', attributes)
+
 
 class Title(Tag):
     def __init__(self, text, **attributes):
         super().__init__('title', attributes)
         self.children.append(text)
+
 
 class Div(Tag):
     def __init__(self, text=None, **attributes):
@@ -64,11 +93,13 @@ class Div(Tag):
         if text:
             self.children.append(text)
 
+
 class P(Tag):
     def __init__(self, text=None, **attributes):
         super().__init__('p', attributes)
         if text:
             self.children.append(text)
+
 
 class Image(Tag):
     def __init__(self, src=None, alt=None, **attributes):
@@ -83,6 +114,21 @@ class Image(Tag):
 
     def __call__(self, children):
         raise TypeError("Cannot add children to an 'img' tag.")
+
+
+class Section(Tag):
+    def __init__(self, text=None, **attributes):
+        super().__init__('section', attributes)
+        if text:
+            self.children.append(text)
+
+
+class Span(Tag):
+    def __init__(self, text=None, **attributes):
+        super().__init__('span', attributes)
+        if text:
+            self.children.append(text)
+
 
 class Generate:
     def __init__(self, html_input: Html, file_name: str):
@@ -108,7 +154,7 @@ html = Html(lang="en")([
     Body()([
         Div(class_="divClass")([
             P("This is a paragraph.", class_="intro"),
-            P("This is a paragraph.", class_="intro")
+            P("This is a paragraph.", class_="intro"),
         ]),
         Div(class_="secondDiv")([
             P("This is a paragraph.", class_="intro", id_="test_id"),
