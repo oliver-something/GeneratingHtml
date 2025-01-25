@@ -4,23 +4,32 @@ class Tag:
         self.attributes = attributes or {}
         self.children = children or []
 
-    def render(self):
-        """Render the tag and its children as HTML."""
-        # Convert attributes to a string
-        attributes_str = ' '.join([f'{key}="{value}"' for key, value in self.attributes.items()])
+    def render(self, indent=0):
+        """Render the tag and its content as formatted HTML."""
+        # Prepare the indentation string
+        indent_str = "  " * indent
+        newline = "\n"
+
+        # Handle special attribute names like class_
+        attributes_str = ' '.join([
+            f'{key.rstrip("_")}="{value}"' for key, value in self.attributes.items()
+        ])
         if attributes_str:
             attributes_str = " " + attributes_str
 
-        # Render children properly
-        children_str = "".join(
-            [child.render() if isinstance(child, Tag) else str(child) for child in self.children]
-        )
+        # Render children with proper indentation
+        children_str = ""
+        if self.children:
+            children_str = newline + "".join(
+                [child.render(indent + 1) if isinstance(child, Tag) else f"{indent_str}  {child}{newline}"
+                 for child in self.children]
+            ) + indent_str
 
         # Render tag with or without children
         if self.children:
-            return f"<{self.name}{attributes_str}>{children_str}</{self.name}>"
+            return f"{indent_str}<{self.name}{attributes_str}>{children_str}</{self.name}>{newline}"
         else:
-            return f"<{self.name}{attributes_str} />"
+            return f"{indent_str}<{self.name}{attributes_str} />{newline}"
 
     def __call__(self, children):
         """Allow adding children with function-like syntax."""
@@ -59,6 +68,21 @@ class P(Tag):
         if text:
             self.children.append(text)
 
+class Generate:
+    def __init__(self, html_input: Html, file_name: str):
+        file_extension = ".html"
+        if file_name.find(file_extension) != -1:
+            self.file_name = file_name
+        else:
+            self.file_name = file_name.join(".html")
+
+        self.html_input = html_input
+    def generate(self):
+        file = open(self.file_name, "w")
+        file.write(self.html_input.render())
+        print("File is written successfully")
+        file.close()
+
 # Example Usage
 html = Html(lang="en")([
     Head()([
@@ -75,3 +99,7 @@ html = Html(lang="en")([
 
 # Print rendered HTML
 print(html.render())
+
+#Generate the rendered HTML
+gen = Generate(html, "index.html")
+gen.generate()
