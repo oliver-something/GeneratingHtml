@@ -16,10 +16,10 @@ INLINE_LEVEL_TAGS = [
 ]
 
 class Tag:
-    def __init__(self, name, attributes=None, children=None):
+    def __init__(self, name, attributes=None, *children):
         self.name = name
         self.attributes = attributes or {}
-        self.children = children or []
+        self.children = list(children)
 
     def render(self, indent=0):
         """Render the tag and its content as formatted HTML."""
@@ -49,7 +49,7 @@ class Tag:
             return f"{indent_str}<{self.name}{attributes_str} />{newline}"
 
 
-    def __call__(self, children):
+    def __call__(self, *children):
         # Validate each child
         for child in children:
             if self.name in INLINE_LEVEL_TAGS and child.name in BLOCK_LEVEL_TAGS:
@@ -112,7 +112,7 @@ class Image(Tag):
 
         super().__init__('img', attributes)
 
-    def __call__(self, children):
+    def __call__(self, *children):
         raise TypeError("Cannot add children to an 'img' tag.")
 
 
@@ -148,7 +148,7 @@ class Script(Tag):
         # Initialize the base Tag
         super().__init__('script', attributes=attributes)
 
-    def __call__(self, children):
+    def __call__(self, *children):
         # Disallow children if src is provided
         if 'src' in self.attributes:
             raise TypeError("A <script> tag with a 'src' attribute cannot have inline content.")
