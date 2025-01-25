@@ -13,7 +13,12 @@ html = Html(lang="en")([
         Div(class_="secondDiv")([
             P("This is a paragraph.", class_="intro", id_="test_id"),
             P("This is a paragraph.", class_="intro"),
-            Image(src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif", alt="rick roll", width_="480", height_="340")
+            Image(
+                src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif",
+                alt="rick roll",
+                width_="480",
+                height_="340"
+            )
         ]),
     ]),
     Script()([
