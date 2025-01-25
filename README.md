@@ -9,14 +9,17 @@
 ## Example usage : 
 
 ```python
-
 html = Html(lang="en")([
     Head()([
         Meta(charset="UTF-8"),
         Title("My Page")
     ]),
     Body()([
-        Div()([
+        Div(class_="divClass")([
+            P("This is a paragraph.", class_="intro"),
+            P("This is a paragraph.", class_="intro")
+        ]),
+        Div(class_="secondDiv")([
             P("This is a paragraph.", class_="intro"),
             P("This is a paragraph.", class_="intro")
         ])
@@ -43,7 +46,15 @@ gen.generate()
     </title>
   </head>
   <body>
-    <div>
+    <div class="divClass">
+      <p class="intro">
+        This is a paragraph.
+      </p>
+      <p class="intro">
+        This is a paragraph.
+      </p>
+    </div>
+    <div class="secondDiv">
       <p class="intro">
         This is a paragraph.
       </p>

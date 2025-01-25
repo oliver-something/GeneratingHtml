@@ -90,7 +90,11 @@ html = Html(lang="en")([
         Title("My Page")
     ]),
     Body()([
-        Div()([
+        Div(class_="divClass")([
+            P("This is a paragraph.", class_="intro"),
+            P("This is a paragraph.", class_="intro")
+        ]),
+        Div(class_="secondDiv")([
             P("This is a paragraph.", class_="intro"),
             P("This is a paragraph.", class_="intro")
         ])
