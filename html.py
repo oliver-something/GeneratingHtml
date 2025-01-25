@@ -130,6 +130,51 @@ class Span(Tag):
             self.children.append(text)
 
 
+class Script(Tag):
+    def __init__(self, src=None, file_type="text/javascript", async_=False, defer=False, **attributes):
+        # Validate attributes
+        if src and 'children' in attributes:
+            raise ValueError("A <script> tag cannot have both 'src' and inline content.")
+
+        # Initialize attributes
+        attributes['type'] = file_type
+        if src:
+            attributes['src'] = src
+        if async_:
+            attributes['async'] = "async"
+        if defer:
+            attributes['defer'] = "defer"
+
+        # Initialize the base Tag
+        super().__init__('script', attributes=attributes)
+
+    def __call__(self, children):
+        # Disallow children if src is provided
+        if 'src' in self.attributes:
+            raise TypeError("A <script> tag with a 'src' attribute cannot have inline content.")
+        self.children.extend(children)
+        return self
+
+    def render(self, indent=0):
+        """Override render to handle raw JavaScript properly."""
+        indent_str = "  " * indent
+        newline = "\n"
+
+        # Prepare attributes
+        attributes_str = ' '.join([
+            f'{key.rstrip("_")}="{value}"' for key, value in self.attributes.items()
+        ])
+        if attributes_str:
+            attributes_str = " " + attributes_str
+
+        # Render inline script or self-closing tag
+        if self.children:
+            children_str = "".join(self.children)  # Raw JavaScript, no indentation or escaping
+            return f"{indent_str}<{self.name}{attributes_str}>{children_str}</{self.name}>{newline}"
+        else:
+            return f"{indent_str}<{self.name}{attributes_str}></{self.name}>{newline}"
+
+
 class Generate:
     def __init__(self, html_input: Html, file_name: str):
         file_extension = ".html"
@@ -145,28 +190,3 @@ class Generate:
         print("File is written successfully")
         file.close()
 
-# Example Usage
-html = Html(lang="en")([
-    Head()([
-        Meta(charset="UTF-8"),
-        Title("My Page")
-    ]),
-    Body()([
-        Div(class_="divClass")([
-            P("This is a paragraph.", class_="intro"),
-            P("This is a paragraph.", class_="intro"),
-        ]),
-        Div(class_="secondDiv")([
-            P("This is a paragraph.", class_="intro", id_="test_id"),
-            P("This is a paragraph.", class_="intro"),
-            Image(src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif", alt="rick roll", width_="480", height_="340")
-        ])
-    ])
-])
-
-# Print rendered HTML
-print(html.render())
-
-#Generate the rendered HTML
-gen = Generate(html, "index.html")
-gen.generate()

@@ -30,6 +30,8 @@ This project aims to create HTML files using a declarative syntax in Python.
 Here is an example of how to use the framework:
 
 ```python
+from html import *
+
 html = Html(lang="en")([
     Head()([
         Meta(charset="UTF-8"),
@@ -38,19 +40,27 @@ html = Html(lang="en")([
     Body()([
         Div(class_="divClass")([
             P("This is a paragraph.", class_="intro"),
-            P("This is a paragraph.", class_="intro")
+            P("This is a paragraph.", class_="intro"),
         ]),
         Div(class_="secondDiv")([
+            P("This is a paragraph.", class_="intro", id_="test_id"),
             P("This is a paragraph.", class_="intro"),
-            P("This is a paragraph.", class_="intro")
-        ])
+            Image(src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif", alt="rick roll", width_="480", height_="340")
+        ]),
+    ]),
+    Script()([
+    """
+        console.log('Hello, World!');
+        let name = 'Oliver';
+        console.log(`Hello, ${name}`);
+    """,
     ])
 ])
 
-# Print the rendered HTML
+# Print rendered HTML
 print(html.render())
 
-# Generate the HTML file
+#Generate the rendered HTML
 gen = Generate(html, "index.html")
 gen.generate()
 ```
@@ -65,17 +75,35 @@ The following HTML will be generated from the Python code:
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>My Page</title>
+    <title>
+      My Page
+    </title>
   </head>
   <body>
     <div class="divClass">
-      <p class="intro">This is a paragraph.</p>
-      <p class="intro">This is a paragraph.</p>
+      <p class="intro">
+        This is a paragraph.
+      </p>
+      <p class="intro">
+        This is a paragraph.
+      </p>
     </div>
     <div class="secondDiv">
-      <p class="intro">This is a paragraph.</p>
-      <p class="intro">This is a paragraph.</p>
+      <p class="intro" id="test_id">
+        This is a paragraph.
+      </p>
+      <p class="intro">
+        This is a paragraph.
+      </p>
+      <img width="480" height="340" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif" alt="rick roll" />
     </div>
   </body>
+  <script type="text/javascript">
+        console.log('Hello, World!');
+        let name = 'Oliver';
+        console.log(`Hello, ${name}`);
+    </script>
 </html>
+
 ```
+> Inline JavaScript is not advised, and there are currently no syntax highlighting capabilities. To use external JavaScript files, add the src attribute. There is support for async and differ.
