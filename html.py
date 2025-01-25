@@ -59,14 +59,30 @@ class Title(Tag):
         self.children.append(text)
 
 class Div(Tag):
-    def __init__(self, **attributes):
+    def __init__(self, text=None, **attributes):
         super().__init__('div', attributes)
+        if text:
+            self.children.append(text)
 
 class P(Tag):
     def __init__(self, text=None, **attributes):
         super().__init__('p', attributes)
         if text:
             self.children.append(text)
+
+class Image(Tag):
+    def __init__(self, src=None, alt=None, **attributes):
+        if not src:
+            raise ValueError("The 'src' attribute is required for an 'Image' tag.")
+        attributes['src'] = src
+
+        if alt:
+            attributes['alt'] = alt
+
+        super().__init__('img', attributes)
+
+    def __call__(self, children):
+        raise TypeError("Cannot add children to an 'img' tag.")
 
 class Generate:
     def __init__(self, html_input: Html, file_name: str):
@@ -95,8 +111,9 @@ html = Html(lang="en")([
             P("This is a paragraph.", class_="intro")
         ]),
         Div(class_="secondDiv")([
+            P("This is a paragraph.", class_="intro", id_="test_id"),
             P("This is a paragraph.", class_="intro"),
-            P("This is a paragraph.", class_="intro")
+            Image(src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHhtanZhaHVvcHplYnhpcGN3ajF0c3diYW91dTMzNTY5ZjRhdmJkOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFgzrTt798d2w/giphy.gif", alt="rick roll", width_="480", height_="340")
         ])
     ])
 ])
