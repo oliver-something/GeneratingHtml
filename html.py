@@ -101,6 +101,14 @@ class P(Tag):
             self.children.append(text)
 
 
+class Break(Tag):
+    def __init__(self, **attributes):
+        super().__init__('br', attributes)
+
+    def __call__(self, *children):
+        raise TypeError("Cannot add children to <br> tag.")
+
+
 class Image(Tag):
     def __init__(self, src=None, alt=None, **attributes):
         if not src:
@@ -113,7 +121,7 @@ class Image(Tag):
         super().__init__('img', attributes)
 
     def __call__(self, *children):
-        raise TypeError("Cannot add children to an 'img' tag.")
+        raise TypeError("Cannot add children to an <img> tag.")
 
 
 class Section(Tag):
